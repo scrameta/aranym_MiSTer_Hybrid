@@ -1,9 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Name=ARAnyM JIT
-Comment=Virtual Machine with JIT CPU compiler for max speed
-Exec=aranym-jit
-Icon=aranym-jit
-Terminal=false
-Type=Application
-Categories=System;Emulator;

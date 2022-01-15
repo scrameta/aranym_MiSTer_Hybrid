@@ -19,7 +19,6 @@
 */
 
 #include "sysdeps.h"
-#include "ndebug.h"
 
 #ifndef DEBUG_H
 #define DEBUG_H
@@ -78,8 +77,8 @@ extern void deactivate_debugger(void);
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#define bug ndebug::dbprintf
-#define panicbug ndebug::pdbprintf
+#define bug printf
+#define panicbug printf
 
 #if defined(DEBUG) && DEBUG
 #define D(x) (x);

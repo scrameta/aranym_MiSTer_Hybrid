@@ -27,13 +27,9 @@
 
 #include "cpu_emulation.h"
 #include "newcpu.h"
-#include "hardware.h"
-#include "scc.h"
-#include "input.h"
 #ifdef USE_JIT
 # include "compiler/compemu.h"
 #endif
-#include "nf_objs.h"
 
 #include "debug.h"
 
@@ -119,23 +115,11 @@ bool Init680x0(void)
 }
 
 /*
- * Instr. RESET
- */
-
-void AtariReset(void)
-{
-	// reset Atari hardware here
-	HWReset();
-	// reset NatFeats here
-	NFReset();
-	// reset the input devices (input.cpp)
-	InputReset();
-
-}
-
-/*
  * Reset CPU
  */
+void AtariReset()
+{
+}
 
 void Reset680x0(void)
 {
@@ -187,17 +171,6 @@ void Quit680x0(void)
 {
 	quit_program = 1;
 	TriggerNMI();
-}
-
-
-int MFPdoInterrupt(void)
-{
-	return getMFP()->doInterrupt();
-}
-
-int SCCdoInterrupt(void)
-{
-	return getSCC()->doInterrupt();
 }
 
 /*

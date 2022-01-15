@@ -37,7 +37,6 @@
 #include "main.h"
 #include "input.h"
 #include "vm_alloc.h"
-#include "hardware.h"
 #include "parameters.h"
 #include "newcpu.h"
 #if defined _WIN32 || defined(OS_cygwin)
@@ -82,7 +81,7 @@
 char const name_string[] = NAME_STRING;
 char const version_string[] = VERSION_STRING;
 
-
+uint32 FastRAMSize; // TODO
 
 #ifndef HAVE_SIGHANDLER_T
 typedef void (*sighandler_t)(int);
@@ -119,7 +118,6 @@ extern "C" void gettimeofday(struct timeval *p, void *tz /*IGNORED*/)
 
 void real_segmentationfault(void)
 {
-	grabMouse(SDL_FALSE);
 	panicbug("Gotcha! Illegal memory access. Atari PC = $%x", (unsigned)showPC());
 #ifdef FULL_HISTORY
 	ndebug::showHistory(20, false);
@@ -650,19 +648,12 @@ int main(int argc, char **argv)
 	HWBaseHost = NULL;
 	FastRAMBaseHost = NULL;
 
-	// remember program name
-	program_name = argv[0];
-
 #ifdef DEBUGGER
 	ndebug::init();
 #endif
 
 	// display version string on console (help when users provide debug info)
 	infoprint("%s", version_string);
-
-	// parse command line switches
-	if (!decode_switches(argc, argv))
-		exit(EXIT_FAILURE);
 
 #if DIRECT_ADDRESSING || FIXED_ADDRESSING
 	// Initialize VM system

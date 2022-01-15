@@ -1090,7 +1090,7 @@ void m68k_natfeat_id(void)
 	save_regs(r);
 
 	memptr stack = r.a[7] + 4;	/* skip return address */
-	r.d[0] = nf_get_id(stack);
+	//TODO r.d[0] = nf_get_id(stack);
 
 	restore_regs(r);
 }
@@ -1104,7 +1104,7 @@ void m68k_natfeat_call(void)
 
 	memptr stack = r.a[7] + 4;	/* skip return address */
 	bool isSupervisorMode = ((r.sr & 0x2000) == 0x2000);
-	r.d[0] = nf_call(stack, isSupervisorMode);
+	//TODO r.d[0] = nf_call(stack, isSupervisorMode);
 
 	restore_regs(r);
 }
@@ -1277,77 +1277,8 @@ static void do_trace (void)
     }
 }
 
-#define SERVE_VBL_MFP(resetStop)							\
-{															\
-	if (SPCFLAGS_TEST( SPCFLAG_INT3|SPCFLAG_VBL|SPCFLAG_INT5|SPCFLAG_SCC|SPCFLAG_MFP )) {		\
-		if (SPCFLAGS_TEST( SPCFLAG_INT3 )) {					\
-			if (3 > regs.intmask) {							\
-				Interrupt(3);								\
-				regs.stopped = 0;							\
-				SPCFLAGS_CLEAR( SPCFLAG_INT3 );				\
-				if (resetStop)								\
-					SPCFLAGS_CLEAR( SPCFLAG_STOP );			\
-			}												\
-		}													\
-		if (SPCFLAGS_TEST( SPCFLAG_VBL )) {					\
-			if (4 > regs.intmask) {							\
-				Interrupt(4);								\
-				regs.stopped = 0;							\
-				SPCFLAGS_CLEAR( SPCFLAG_VBL );				\
-				if (resetStop)								\
-					SPCFLAGS_CLEAR( SPCFLAG_STOP );			\
-			}												\
-		}													\
-		if (SPCFLAGS_TEST( SPCFLAG_INT5 )) {					\
-			if (5 > regs.intmask) {							\
-				Interrupt(5);								\
-				regs.stopped = 0;							\
-				SPCFLAGS_CLEAR( SPCFLAG_INT5 );				\
-				if (resetStop)								\
-					SPCFLAGS_CLEAR( SPCFLAG_STOP );			\
-			}												\
-		}													\
-		if (SPCFLAGS_TEST( SPCFLAG_SCC )) {					\
-			if (5 > regs.intmask) {						\
-				int vector_number=SCCdoInterrupt();			\
-				if(vector_number){					\
-					 SCCInterrupt(vector_number);	        	\
-					regs.stopped = 0;				\
-					SPCFLAGS_CLEAR( SPCFLAG_SCC);		\
-					if (resetStop)					\
-						SPCFLAGS_CLEAR( SPCFLAG_STOP );		\
-				}							\
-				else							\
-					SPCFLAGS_CLEAR( SPCFLAG_SCC );		\
-			}								\
-		}									\
-		if (SPCFLAGS_TEST( SPCFLAG_MFP )) {					\
-			if (6 > regs.intmask) {							\
-				int vector_number = MFPdoInterrupt();		\
-				if (vector_number) {						\
-					MFPInterrupt(vector_number);			\
-					regs.stopped = 0;						\
-					if (resetStop)							\
-						SPCFLAGS_CLEAR( SPCFLAG_STOP );		\
-				}											\
-				else										\
-					SPCFLAGS_CLEAR( SPCFLAG_MFP );			\
-			}												\
-		}													\
-	}														\
-}
-
-#define SERVE_INTERNAL_IRQ()								\
-{															\
-	if (SPCFLAGS_TEST( SPCFLAG_INTERNAL_IRQ )) {			\
-		SPCFLAGS_CLEAR( SPCFLAG_INTERNAL_IRQ );				\
-		invoke200HzInterrupt();								\
-	}														\
-}
-
 int m68k_do_specialties(void)
 {
-	SERVE_INTERNAL_IRQ();
 #ifdef USE_JIT
 	// Block was compiled
 	SPCFLAGS_CLEAR( SPCFLAG_JIT_END_COMPILE );
@@ -1390,15 +1321,11 @@ int m68k_do_specialties(void)
 		// give unused time slices back to OS
 		SleepAndWait();
 
-		SERVE_INTERNAL_IRQ();
-		SERVE_VBL_MFP(true);
 		if (SPCFLAGS_TEST( SPCFLAG_BRK ))
 			break;
 	}
 	if (SPCFLAGS_TEST( SPCFLAG_TRACE ))
 		do_trace ();
-
-	SERVE_VBL_MFP(false);
 
 /*
 // do not understand the INT vs DOINT stuff so I disabled it (joy)

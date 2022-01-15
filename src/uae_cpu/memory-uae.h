@@ -35,7 +35,6 @@
 
 #include "sysdeps.h"
 #include "string.h"
-#include "hardware.h"
 #include "parameters.h"
 #include "registers.h"
 #include "cpummu.h"
@@ -194,10 +193,6 @@ static inline uae_u64 phys_get_quad(uaecptr addr)
     if (((addr ^ read_page) <= ARAM_PAGE_MASK))
         return do_get_mem_quad((uae_u64*)(addr + read_offset));
 #endif
-#ifndef HW_SIGSEGV
-    addr = addr < 0xff000000 ? addr : addr & 0x00ffffff;
-    if ((addr & 0xfff00000) == 0x00f00000) return HWget_l(addr); /* TODO: must be HWget_q */
-#endif
     check_ram_boundary(addr, 8, false);
     uae_u64 * const m = (uae_u64 *)phys_get_real_address(addr);
 #ifdef ARAM_PAGE_CHECK
@@ -212,10 +207,6 @@ static inline uae_u32 phys_get_long(uaecptr addr)
 #ifdef ARAM_PAGE_CHECK
     if (((addr ^ read_page) <= ARAM_PAGE_MASK))
         return do_get_mem_long((uae_u32*)(addr + read_offset));
-#endif
-#ifndef HW_SIGSEGV
-    addr = addr < 0xff000000 ? addr : addr & 0x00ffffff;
-    if ((addr & 0xfff00000) == 0x00f00000) return HWget_l(addr);
 #endif
     check_ram_boundary(addr, 4, false);
     uae_u32 * const m = (uae_u32 *)phys_get_real_address(addr);
@@ -232,10 +223,6 @@ static inline uae_u32 phys_get_word(uaecptr addr)
     if (((addr ^ read_page) <= ARAM_PAGE_MASK))
         return do_get_mem_word((uae_u16*)(addr + read_offset));
 #endif
-#ifndef HW_SIGSEGV
-    addr = addr < 0xff000000 ? addr : addr & 0x00ffffff;
-    if ((addr & 0xfff00000) == 0x00f00000) return HWget_w(addr);
-#endif
     check_ram_boundary(addr, 2, false);
     uae_u16 * const m = (uae_u16 *)phys_get_real_address(addr);
 #ifdef ARAM_PAGE_CHECK
@@ -250,10 +237,6 @@ static inline uae_u32 phys_get_byte(uaecptr addr)
 #ifdef ARAM_PAGE_CHECK
     if (((addr ^ read_page) <= ARAM_PAGE_MASK))
         return do_get_mem_byte((uae_u8*)(addr + read_offset));
-#endif
-#ifndef HW_SIGSEGV
-    addr = addr < 0xff000000 ? addr : addr & 0x00ffffff;
-    if ((addr & 0xfff00000) == 0x00f00000) return HWget_b(addr);
 #endif
     check_ram_boundary(addr, 1, false);
     uae_u8 * const m = (uae_u8 *)phys_get_real_address(addr);
@@ -272,13 +255,6 @@ static inline void phys_put_quad(uaecptr addr, uae_u64 l)
         return;
     }
 #endif
-#ifndef HW_SIGSEGV
-    addr = addr < 0xff000000 ? addr : addr & 0x00ffffff;
-    if ((addr & 0xfff00000) == 0x00f00000) {
-        HWput_l(addr, l); /* TODO: must be HWput_q */
-        return;
-    } 
-#endif
     check_ram_boundary(addr, 8, true);
     uae_u64 * const m = (uae_u64 *)phys_get_real_address(addr);
 #ifdef ARAM_PAGE_CHECK
@@ -295,13 +271,6 @@ static inline void phys_put_long(uaecptr addr, uae_u32 l)
         do_put_mem_long((uae_u32*)(addr + write_offset), l);
         return;
     }
-#endif
-#ifndef HW_SIGSEGV
-    addr = addr < 0xff000000 ? addr : addr & 0x00ffffff;
-    if ((addr & 0xfff00000) == 0x00f00000) {
-        HWput_l(addr, l);
-        return;
-    } 
 #endif
     check_ram_boundary(addr, 4, true);
     uae_u32 * const m = (uae_u32 *)phys_get_real_address(addr);
@@ -320,13 +289,6 @@ static inline void phys_put_word(uaecptr addr, uae_u32 w)
         return;
     }
 #endif
-#ifndef HW_SIGSEGV
-    addr = addr < 0xff000000 ? addr : addr & 0x00ffffff;
-    if ((addr & 0xfff00000) == 0x00f00000) {
-        HWput_w(addr, w);
-        return;
-    }
-#endif
     check_ram_boundary(addr, 2, true);
     uae_u16 * const m = (uae_u16 *)phys_get_real_address(addr);
 #ifdef ARAM_PAGE_CHECK
@@ -341,13 +303,6 @@ static inline void phys_put_byte(uaecptr addr, uae_u32 b)
 #ifdef ARAM_PAGE_CHECK
     if (((addr ^ write_page) <= ARAM_PAGE_MASK)) {
         do_put_mem_byte((uae_u8*)(addr + write_offset), b);
-        return;
-    }
-#endif
-#ifndef HW_SIGSEGV
-    addr = addr < 0xff000000 ? addr : addr & 0x00ffffff;
-    if ((addr & 0xfff00000) == 0x00f00000) {
-        HWput_b(addr, b);
         return;
     }
 #endif

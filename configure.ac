@@ -12,7 +12,7 @@ AC_PREREQ(2.52)
 AC_CONFIG_HEADER(config.h)
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([.])
-AC_CONFIG_SRCDIR([src/hostscreen.cpp])
+AC_CONFIG_SRCDIR([src/disasm-main.cpp])
 
 dnl Define list of provided Native Features
 PROVIDES_NF="audio bootstrap xhdi"
@@ -1075,21 +1075,6 @@ AM_CONDITIONAL([ETHERNET_SUPPORT], test "$HAVE_ETHERNET" = "yes")
 if [[ "x$HAVE_ETHERNET" = "xyes" ]]; then
   PROVIDES_NF="$PROVIDES_NF ethernet"
 fi
-
-dnl Support for direct access to host's fs
-if [[ "x$WANT_HOSTFS" = "xyes" ]]; then
-  AC_DEFINE([HOSTFS_SUPPORT], 1, [Define if you want to use direct access to host's fs])
-  PROVIDES_NF="$PROVIDES_NF hostfs"
-fi
-AM_CONDITIONAL([HOSTFS_SUPPORT], test "$WANT_HOSTFS" = "yes")
-
-
-dnl SDL GUI
-if test "x$WANT_SDLGUI" = "xyes" ; then
-  AC_DEFINE([SDL_GUI], 1, [Define if you want to build SDL GUI])
-fi
-AM_CONDITIONAL([SDL_GUI], test "$WANT_SDLGUI" = yes)
-
 
 dnl C++ exceptions
 if [[ "x$WANT_EXSIGSEGV" = "xyes" ]]; then
