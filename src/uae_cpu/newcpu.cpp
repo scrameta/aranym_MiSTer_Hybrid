@@ -45,7 +45,6 @@
 # include "compiler/compemu.h"
 #endif
 #include "fpu/fpu.h"
-#include "natfeats.h"
 #include "disasm-glue.h"
 
 #include <cstdlib>

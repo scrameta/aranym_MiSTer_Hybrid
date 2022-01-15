@@ -60,20 +60,6 @@ extern uint8 *FakeIOBaseHost;
 # define RAMEnd 0
 #endif
 
-// Atari memory access functions
-// Direct access to CPU address space
-// For HW operations
-// Read/WriteAtariIntXX
-//
-static inline uint64 ReadAtariInt64(memptr addr) {return phys_get_quad(addr);}
-static inline uint32 ReadAtariInt32(memptr addr) {return phys_get_long(addr);}
-static inline uint16 ReadAtariInt16(memptr addr) {return phys_get_word(addr);}
-static inline uint8 ReadAtariInt8(memptr addr) {return phys_get_byte(addr);}
-static inline void WriteAtariInt64(memptr addr, uint64 q) {phys_put_quad(addr, q);}
-static inline void WriteAtariInt32(memptr addr, uint32 l) {phys_put_long(addr, l);}
-static inline void WriteAtariInt16(memptr addr, uint16 w) {phys_put_word(addr, w);}
-static inline void WriteAtariInt8(memptr addr, uint8 b) {phys_put_byte(addr, b);}
-
 // Direct access to allocated memory
 // Ignores HW checks, so that be carefull
 // Read/WriteHWMemIntXX
